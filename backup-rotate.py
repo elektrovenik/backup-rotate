@@ -4,6 +4,7 @@ import time
 import argparse
 import os.path
 from os.path import isfile, join
+import math
 
 __author__ = 'kid'
 
@@ -86,12 +87,25 @@ for ff in allSavedFiles:
 if not args.silent:
     print "%s file(s) for del" % files.__len__()
 
+
+def get_max_days_digits(all_files):
+    _dd = 0
+    max_days = 0
+    for _f1 in all_files:
+        max_days = max(max_days, int(round((_f1[1] - _dd) / 3600 / 24)))
+        _dd = _f1[1]
+
+    return str(int(max(1, math.ceil(math.log(max_days, 10)))))
+
+maxDaysDigs = get_max_days_digits(allFiles)
+
 dd = 0
 for f1 in allFiles:
     days = int(round((f1[1] - dd) / 3600 / 24))
 
     if not args.silent:
-        print "%s | (%s days) | %s: %s" % ('+' if f1 in allSavedFiles else '-', days, time.ctime(f1[1]), f1[0])
+        print "%s | %s days | %s | %s" % ('+' if f1 in allSavedFiles else '-',
+                                          ('{0:' + maxDaysDigs + 'd}').format(days), time.ctime(f1[1]), f1[0])
     dd = f1[1]
 
     # удаляем файл
