@@ -50,9 +50,11 @@ allSavedFiles = []
 for rotate in sorted(rotateSettings.keys(), reverse=False):
     # print rotate
     savedFiles = []
-    lastTime = 0
+    lastTime = time.time()
+    # print lastTime
     for (fileInfo) in files:
-        days = round((fileInfo[1] - lastTime) / 3600 / 24)
+        days = abs(round((fileInfo[1] - lastTime) / 3600 / 24))
+        # print fileInfo[1]
         if days >= rotate:
             # print "last modified of %s (%s), %s days: %s" % (time.ctime(fileInfo[1]), fileInfo[1], days, fileInfo[0])
             lastTime = fileInfo[1]
@@ -79,33 +81,33 @@ for ff in allSavedFiles:
     if ff in files:
         files.remove(ff)
 
-# if not args.really_remove_files
-# print allSavedFiles.__len__()
-# for ff in allSavedFiles:
-#     print ff[0]
 
 if not args.silent:
     print "%s file(s) for del" % files.__len__()
 
 
 def get_max_days_digits(all_files):
-    _dd = 0
+    _dd = time.time()
     max_days = 0
     for _f1 in all_files:
-        max_days = max(max_days, int(round((_f1[1] - _dd) / 3600 / 24)))
+        max_days = max(max_days, abs(int(round((_f1[1] - _dd) / 3600 / 24))))
         _dd = _f1[1]
 
     return str(int(max(1, math.ceil(math.log(max_days, 10)))))
 
 maxDaysDigs = get_max_days_digits(allFiles)
 
-dd = 0
+dd = time.time()
+isFirstFile = True
 for f1 in allFiles:
-    days = int(round((f1[1] - dd) / 3600 / 24))
+    days = abs(int(round((f1[1] - dd) / 3600 / 24)))
 
     if not args.silent:
-        print "%s | %s days | %s | %s" % ('+' if f1 in allSavedFiles else '-',
-                                          ('{0:' + maxDaysDigs + 'd}').format(days), time.ctime(f1[1]), f1[0])
+        print "%s | %s %s | %s | %s" % ('+' if f1 in allSavedFiles else '-',
+                                        ('{0:' + maxDaysDigs + 'd}').format(days), 'dago' if isFirstFile else 'days',
+                                        time.ctime(f1[1]), f1[0])
+        isFirstFile = False
+
     dd = f1[1]
 
     # удаляем файл
